@@ -25,16 +25,7 @@ int main()
     uint offset = pio_add_program(pio, &blink_program);
     printf("Loaded program at %d\n", offset);
 
-#ifdef PICO_DEFAULT_LED_PIN
     blink_pin_forever(pio, 0, offset, PICO_DEFAULT_LED_PIN, 3);
-#else
-    blink_pin_forever(pio, 0, offset, 6, 3);
-#endif
-    // For more pio examples see https://github.com/raspberrypi/pico-examples/tree/master/pio
 
-    while (true)
-    {
-        printf("Hello, world!\n");
-        sleep_ms(1000);
-    }
+    // For more pio examples see https://github.com/raspberrypi/pico-examples/tree/master/pio
 }
