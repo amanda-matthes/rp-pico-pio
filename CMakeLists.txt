@@ -15,13 +15,16 @@ if(WIN32)
 else()
     set(USERHOME $ENV{HOME})
 endif()
+
 set(sdkVersion 2.2.0)
 set(toolchainVersion 14_2_Rel1)
 set(picotoolVersion 2.2.0-a4)
 set(picoVscode ${USERHOME}/.pico-sdk/cmake/pico-vscode.cmake)
-if (EXISTS ${picoVscode})
+
+if(EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
+
 # ====================================================================================
 set(PICO_BOARD pico2 CACHE STRING "Board type")
 
@@ -34,8 +37,7 @@ project(rp-pico-pio C CXX ASM)
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
-
-add_executable(rp-pico-pio rp-pico-pio.cpp )
+add_executable(rp-pico-pio rp-pico-pio.cpp)
 
 pico_set_program_name(rp-pico-pio "rp-pico-pio")
 pico_set_program_version(rp-pico-pio "0.1")
@@ -49,17 +51,16 @@ pico_enable_stdio_usb(rp-pico-pio 0)
 
 # Add the standard library to the build
 target_link_libraries(rp-pico-pio
-        pico_stdlib)
+    pico_stdlib)
 
 # Add the standard include files to the build
 target_include_directories(rp-pico-pio PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}
 )
 
 # Add any user requested libraries
-target_link_libraries(rp-pico-pio 
-        hardware_pio
-        )
+target_link_libraries(rp-pico-pio
+    hardware_pio
+)
 
 pico_add_extra_outputs(rp-pico-pio)
-
