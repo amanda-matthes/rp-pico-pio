@@ -20,12 +20,18 @@ int main()
 {
     stdio_init_all();
 
-    // PIO Blinking example
     PIO pio = pio0;
     uint offset = pio_add_program(pio, &blink_program);
     printf("Loaded program at %d\n", offset);
 
-    blink_pin_forever(pio, 0, offset, PICO_DEFAULT_LED_PIN, 3);
+    uint pin2 = 2;
+    uint pin3 = 3;
+
+    blink_pin_forever(pio, 0, offset, pin2, 3);
+    blink_pin_forever(pio, 1, offset, pin3, 3);
 
     // For more pio examples see https://github.com/raspberrypi/pico-examples/tree/master/pio
+    while (true)
+    {
+    }
 }
