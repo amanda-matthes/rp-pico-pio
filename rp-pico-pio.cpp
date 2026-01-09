@@ -15,7 +15,7 @@ int main()
 
     // pick a PIO block and a state machine within that PIO (Pico 2 has 3 PIO blocks with 4 state machines each)
     PIO test_pio = pio0;         // wee will use PIO block 0
-    uint test_state_machine = 1; // we will use state machine
+    uint test_state_machine = 0; // we will use state machine 0
     uint test_pin = 4;           // we will use GPIO 4 for the output
     uint test_frequency_Hz = 9;
 
