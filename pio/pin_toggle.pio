@@ -1,0 +1,13 @@
+.program test
+    pull block
+    out y, 32
+.wrap_target
+    mov x, y
+    set pins, 1   ; set pin high
+lp1:
+    jmp x-- lp1   ; delay for (x + 1) cycles, x is a 32 bit number
+    mov x, y
+    set pins, 0   ; set pin low
+lp2:
+    jmp x-- lp2   ; delay for the same number of cycles again
+.wrap             ; repeat forever
