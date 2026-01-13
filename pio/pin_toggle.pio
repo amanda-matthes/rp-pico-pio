@@ -1,4 +1,4 @@
-.program test
+.program pin_toggle
     pull block
     out y, 32
 .wrap_target

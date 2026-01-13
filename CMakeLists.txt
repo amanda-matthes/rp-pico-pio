@@ -44,6 +44,7 @@ pico_set_program_version(rp-pico-pio "0.1")
 
 # Generate PIO header
 pico_generate_pio_header(rp-pico-pio ${CMAKE_CURRENT_LIST_DIR}/pio/test.pio)
+pico_generate_pio_header(rp-pico-pio ${CMAKE_CURRENT_LIST_DIR}/pio/pin_toggle.pio)
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(rp-pico-pio 0)
