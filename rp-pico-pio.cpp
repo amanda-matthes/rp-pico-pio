@@ -17,11 +17,9 @@ void pio_test()
     uint state_machine_index = 1; // state machine 1
     uint pin = 2;                 // GPIO pin 2
 
-    uint pin_toggle_frequency_Hz = 5;
-
     // add program to pio instruction memory
-    uint memory_offset = pio_add_program(pio_block, &pin_toggle_basic_program);
-    pio_sm_config state_machine_config = pin_toggle_basic_program_get_default_config(memory_offset);
+    uint memory_offset = pio_add_program(pio_block, &test_program);
+    pio_sm_config state_machine_config = test_program_get_default_config(memory_offset);
 
     // set the output pin of the PIO state machine
     pio_gpio_init(pio_block, pin);
@@ -29,8 +27,9 @@ void pio_test()
     sm_config_set_set_pins(&state_machine_config, pin, 1);
 
     // slow down clock to adjust frequency
-    uint32_t clock_divider = SYS_CLK_HZ / (2 * pin_toggle_frequency_Hz);
-    sm_config_set_clkdiv_int_frac8(&state_machine_config, clock_divider, 0);
+    uint32_t required_state_machine_clock_Hz = 1000000; // 1 MHz
+    float clock_divider = SYS_CLK_HZ / required_state_machine_clock_Hz;
+    sm_config_set_clkdiv(&state_machine_config, clock_divider);
 
     // initialise the state machine
     pio_sm_init(pio_block, state_machine_index, memory_offset, &state_machine_config);
