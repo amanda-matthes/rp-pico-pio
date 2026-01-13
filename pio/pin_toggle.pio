@@ -19,12 +19,12 @@
     pull block      // wait for data in TX FIFO - this is the delay value
     out y 32        // move 32bits from OSR to y
 .wrap_target
-    mov x, y        // copy y to x for delay count
-    set pins, 1     // set pin high
+    mov x y         // copy y to x for delay count
+    set pins 1      // set pin high
 loop_high:
     jmp x-- loop_high   // decrement x and jump if non-zero (until counter is zero)
-    mov x, y        // reload x from y for delay count reset
-    set pins, 0     // set pin low
+    mov x y             // reload x from y for delay count reset
+    set pins 0          // set pin low
 loop_low:
     jmp x-- loop_low   // delay for the same number of cycles again
-.wrap               // repeat forever
+.wrap                  // repeat forever
