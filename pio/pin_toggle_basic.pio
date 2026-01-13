@@ -1,0 +1,12 @@
+/**
+ * Super basic pin toggle PIO program
+ *
+ * Set the clock divider to adjust the toggle speed.
+ *
+ * The frequency of the output is 1/3 of the frequency of the PIO state machine clock.
+ */
+.program pin_toggle_basic
+loop:
+    set pins 0 [2]
+    set pins 1 [1] // because the jmp instruction also takes a cycle
+    jmp loop
