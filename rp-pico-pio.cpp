@@ -60,6 +60,20 @@ void pio_pin_toggle()
     pio_sm_set_enabled(pin_toggle_pio, pin_toggle_state_machine, true);
 
     // set the frequency by filling the FIFO of the state machine
+    // for this example we need to provide the delay between each toggle
+    /**
+     * T_system = 1 / f_system // system clock period
+     * T_target = 1 / f_target // target period
+     *
+     * toggle_delay = T_toggle / 2
+     *
+     * cycles_between_toggles = toggle_delay / T_system
+     *                        = (T_target / 2) / T_system
+     *                        = f_system / (2 * f_target)
+     *
+     * this PIO example has 3 cycles of overhead per toggle
+     * so we subtract 3 from the result
+     */
     pin_toggle_pio->txf[pin_toggle_state_machine] = (SYS_CLK_HZ / (2 * pin_toggle_frequency_Hz)) - 3;
 }
 

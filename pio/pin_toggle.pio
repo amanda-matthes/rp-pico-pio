@@ -1,13 +1,30 @@
+/**
+ * Pin toggle PIO program
+ *
+ * This PIO program toggles a pin high and low with a delay specified by the
+ * value pulled from the TX FIFO.
+ *
+ * The input needs to be the number of cycles between each toggle minus three
+ * to account for instruction overhead.
+ *
+ * The delay is implemented using two loops,
+ * one for the high state and one for the low state, each looping for the
+ * number of cycles specified by the input value.
+ *
+ * The program expects a 32-bit value to be pushed into the TX FIFO before
+ * starting the state machine. This value determines the delay duration.
+ *
+ */
 .program pin_toggle
-    pull block
-    out y, 32
+    pull block      // wait for data in TX FIFO - this is the delay value
+    out y 32        // move 32bits from OSR to y
 .wrap_target
-    mov x, y
-    set pins, 1   ; set pin high
-lp1:
-    jmp x-- lp1   ; delay for (x + 1) cycles, x is a 32 bit number
-    mov x, y
-    set pins, 0   ; set pin low
-lp2:
-    jmp x-- lp2   ; delay for the same number of cycles again
-.wrap             ; repeat forever
+    mov x, y        // copy y to x for delay count
+    set pins, 1     // set pin high
+loop_high:
+    jmp x-- loop_high   // decrement x and jump if non-zero (until counter is zero)
+    mov x, y        // reload x from y for delay count reset
+    set pins, 0     // set pin low
+loop_low:
+    jmp x-- loop_low   // delay for the same number of cycles again
+.wrap               // repeat forever
