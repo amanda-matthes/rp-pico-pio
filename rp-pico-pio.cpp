@@ -15,18 +15,22 @@ void pio_test()
     // pick a PIO block and a state machine within that PIO (Pico 2 has 3 PIO blocks with 4 state machines each)
     PIO pio_block = pio0;         // PIO block 0
     uint state_machine_index = 1; // state machine 1
-    uint pin = 2;                 // GPIO pin 2
+    uint clock_pin = 2;
+    uint data_pin = 3;
 
     // add program to pio instruction memory
     uint memory_offset = pio_add_program(pio_block, &test_program);
     pio_sm_config state_machine_config = test_program_get_default_config(memory_offset);
 
     // set the output pin of the PIO state machine
-    pio_gpio_init(pio_block, pin);
-    pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, pin, 1, true);
+    pio_gpio_init(pio_block, clock_pin);
+    pio_gpio_init(pio_block, data_pin);
+    pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, clock_pin, 1, true);
+    pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, data_pin, 1, true);
     // here we are using the GPIO pin with the out instruction, so we need to set out pins accordingly
-    sm_config_set_out_pins(&state_machine_config, pin, 1);
-    sm_config_set_set_pins(&state_machine_config, pin, 1);
+    sm_config_set_out_pins(&state_machine_config, data_pin, 1);
+    // we are using side set to drive the clock pin
+    sm_config_set_sideset_pins(&state_machine_config, clock_pin);
 
     // slow down clock to adjust frequency
     uint32_t required_state_machine_clock_Hz = 1000000; // 1 MHz
@@ -139,8 +143,8 @@ int main()
     // }
 
     // PIO example - uncomment ONE SINGLE example at a time (they may conflict on using the same PIO block / state machine / GPIO pins)
-    // pio_test();
-    pio_pin_toggle_basic();
+    pio_test();
+    // pio_pin_toggle_basic();
     // pio_pin_toggle();
 
     // loop to keep going and for LED sanity check

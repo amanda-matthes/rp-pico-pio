@@ -2,12 +2,17 @@
  * Test PIO program
  *
  * Pulls a value from the TX FIFO through the OSR, then writes the bits serially to a GPIO pin.
+ *
+ * Uses side set to generate a clock signal on another GPIO pin.
  */
 .program test
-main_loop:
+.side_set 1 opt
+.wrap_target
     pull block          // wait for data in TX FIFO and move into OSR
     set y 31            // use y as a bit counter
 bit_write_loop:
-    out pins 1              // write one bit to pin from OSR
-    jmp y-- bit_write_loop  // decrement y and jump if non-zero (until counter is zero)
-    jmp main_loop           // repeat forever
+    out pins 1 side 0               // write one bit to pin from OSR
+    nop        side 1               // set clock high
+    nop        side 1
+    jmp y-- bit_write_loop  side 0  // decrement y and jump if non-zero (until counter is zero)
+.wrap                               // repeat forever
