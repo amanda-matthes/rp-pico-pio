@@ -174,14 +174,6 @@ void pio_pin_toggle()
     pin_toggle_pio->txf[pin_toggle_state_machine] = (SYS_CLK_HZ / (2 * pin_toggle_frequency_Hz)) - 3;
 }
 
-/**
- * PIO example: Move data from the TX FIFO to a GPIO pin
- */
-void pio_move_data_TX_to_GPIO()
-{
-    // TODO
-}
-
 int main()
 {
     // LED blink for sanity checks
