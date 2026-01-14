@@ -27,8 +27,9 @@ void pio_test()
     pio_gpio_init(pio_block, data_pin);
     pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, clock_pin, 1, true);
     pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, data_pin, 1, true);
-    // here we are using the GPIO pin with the out instruction, so we need to set out pins accordingly
+    // here we are using the GPIO pin with the out and set instruction, so we need to set out pins accordingly
     sm_config_set_out_pins(&state_machine_config, data_pin, 1);
+    sm_config_set_set_pins(&state_machine_config, data_pin, 1);
     // we are using side set to drive the clock pin
     sm_config_set_sideset_pins(&state_machine_config, clock_pin);
 
@@ -41,10 +42,16 @@ void pio_test()
     pio_sm_init(pio_block, state_machine_index, memory_offset, &state_machine_config);
     pio_sm_set_enabled(pio_block, state_machine_index, true);
 
+    uint8_t x1 = 0xAB; // example byte for shift register 1
+    uint8_t x2 = 0xCD; // example byte for shift register 2
+
+    // concatenate the two bytes into a single 32-bit word
+    uint32_t data_word = ((uint32_t)x1 << 24) | ((uint32_t)x2 << 16);
+
     // add something to the FIFO of the state machine
     while (true)
     {
-        pio_block->txf[state_machine_index] = 0xAFAFAFAF;
+        pio_block->txf[state_machine_index] = data_word;
         sleep_us(200);
     }
 }
