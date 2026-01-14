@@ -5,16 +5,27 @@
  *
  * Uses side set to generate a clock signal on another GPIO pin.
  */
+
 .program test
-.side_set 1 opt
+.side_set 1 opt         // use side set for clock signal
+.define LATCH       0b01 // least significant bit maps to lowest set pin
+.define DAC_CLK_POS 0b10
+.define DAC_CLK_NEG 0b00
 .wrap_target
     pull block          // wait for data in TX FIFO and move into OSR
     out null 16         // discard first 16 bits in OSR
     set y 15            // use y as a bit counter
+
 bit_write_loop:
     out pins 1 side 0               // write one bit to pin from OSR
     nop        side 1               // set clock high
     nop        side 1
     jmp y-- bit_write_loop  side 0  // decrement y and jump if non-zero (until counter is zero)
-    set pins 0 side 0               // ensure pin is low at end
+
+    set pins LATCH          // set latch high to latch into the shift registers
+    nop
+    set pins DAC_CLK_POS    // set DAC clock high to clock data into DACs
+    nop
+    set pins DAC_CLK_NEG    // set DAC clock low again
+    nop
 .wrap                               // repeat forever
