@@ -16,8 +16,9 @@ void pio_test()
     // pick a PIO block and a state machine within that PIO (Pico 2 has 3 PIO blocks with 4 state machines each)
     PIO pio_block = pio0;         // PIO block 0
     uint state_machine_index = 1; // state machine 1
-    uint clock_pin = 2;
-    uint data_pin = 3;
+    uint clock_pin = 2;           // we'll use side set to drive this
+    uint data_pin = 3;            // this will only be driven by out instructions
+    uint set_pin_start = 4;       // 4 is latch, 5 is DAC clk
 
     // add program to pio instruction memory
     uint memory_offset = pio_add_program(pio_block, &test_program);
@@ -26,13 +27,18 @@ void pio_test()
     // set the output pin of the PIO state machine
     pio_gpio_init(pio_block, clock_pin);
     pio_gpio_init(pio_block, data_pin);
+    pio_gpio_init(pio_block, set_pin_start);
+    pio_gpio_init(pio_block, set_pin_start + 1);
     pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, clock_pin, 1, true);
     pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, data_pin, 1, true);
-    // here we are using the GPIO pin with the out and set instruction, so we need to set out pins accordingly
-    sm_config_set_out_pins(&state_machine_config, data_pin, 1);
-    sm_config_set_set_pins(&state_machine_config, data_pin, 1);
+    pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, set_pin_start, 1, true);
+    pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, set_pin_start + 1, 1, true);
     // we are using side set to drive the clock pin
     sm_config_set_sideset_pins(&state_machine_config, clock_pin);
+    // we are using the GPIO data pin with the out instruction
+    sm_config_set_out_pins(&state_machine_config, data_pin, 1);
+    // we are using set for additional digital signals (latch, DAC clk)
+    sm_config_set_set_pins(&state_machine_config, set_pin_start, 2);
 
     // slow down clock to adjust frequency
     uint32_t required_state_machine_clock_Hz = 1000000; // 1 MHz
@@ -192,6 +198,7 @@ int main()
     pio_test();
     // pio_pin_toggle_basic();
     // pio_pin_toggle();
+    // pio_move_data_TX_to_GPIO();
 
     // loop to keep going and for LED sanity check
     // (some examples may not reach this)
