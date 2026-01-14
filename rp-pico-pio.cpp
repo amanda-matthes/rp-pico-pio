@@ -24,6 +24,8 @@ void pio_test()
     // set the output pin of the PIO state machine
     pio_gpio_init(pio_block, pin);
     pio_sm_set_consecutive_pindirs(pio_block, state_machine_index, pin, 1, true);
+    // here we are using the GPIO pin with the out instruction, so we need to set out pins accordingly
+    sm_config_set_out_pins(&state_machine_config, pin, 1);
     sm_config_set_set_pins(&state_machine_config, pin, 1);
 
     // slow down clock to adjust frequency
@@ -36,7 +38,11 @@ void pio_test()
     pio_sm_set_enabled(pio_block, state_machine_index, true);
 
     // add something to the FIFO of the state machine
-    pio_block->txf[state_machine_index] = 0xAFAFAFAF;
+    while (true)
+    {
+        pio_block->txf[state_machine_index] = 0xAFAFAFAF;
+        sleep_us(200);
+    }
 }
 
 /**
@@ -124,6 +130,13 @@ int main()
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     uint32_t delay_ms = 1000;
+
+    stdio_init_all(); // for USB serial output
+
+    // while (!stdio_usb_connected())
+    // {
+    //     sleep_ms(100);
+    // }
 
     // PIO example - uncomment ONE SINGLE example at a time (they may conflict on using the same PIO block / state machine / GPIO pins)
     // pio_test();
